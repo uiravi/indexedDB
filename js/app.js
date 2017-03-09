@@ -77,8 +77,8 @@ function showCustomers(e){
 		if(cursor){
 			output += "<tr id='customer_"+cursor.value.id+"'>";
 			output += "<td>"+cursor.value.id+"</td>";
-			output += "<td data='"+cursor.value.name+"' class='name'><span>"+cursor.value.name+"</span></td>";
-			output += "<td><span>"+cursor.value.email+"</span></td>";
+			output += "<td data='"+cursor.value.name+"' class='name'><span contenteditable='true' class='cursor customer' data-field='name' data-id='"+cursor.value.id+"'>"+cursor.value.name+"</span></td>";
+			output += "<td><span contenteditable='true' class='cursor customer' data-field='email' data-id='"+cursor.value.id+"'>"+cursor.value.email+"</span></td>";
 			output += "<td><a href='javascript:void(0)' onclick='removeCustomers("+cursor.value.id+")'>Delete</a></td>";
 			output += "</tr>";
 			cursor.continue();
@@ -116,3 +116,44 @@ function clearCustomers(){
 	indexedDB.deleteDatabase('customermanager');
 	window.location.href="index.html";
 }
+
+//Update Customers
+$("#customers").on("keyup", ".customer", function(){
+	//Newly entered text
+	var newText = $(this).html();
+
+	//Field
+	var field = $(this).data("field");
+
+	//Customer ID
+	var id = $(this).data("id");
+
+	//Get Transaction
+	var transaction = db.transaction(['customers'], 'readwrite');
+
+	//Ask for ObjectStore
+	var store = transaction.objectStore('customers');
+
+	var request = store.get(id);
+
+	request.onsuccess = function(){
+		var data = request.result;
+		if(field == 'name'){
+			data.name = newText;
+		}else if(field == 'email'){
+			data.email = newText;
+		}
+
+		//Store Updated Text
+		var requestUpdate = store.put(data);
+
+		requestUpdate.onsuccess = function(){
+			console.log("Success: Customer field updated...");
+		}
+
+		requestUpdate.onerror = function(){
+			console.log("Error: Customer field not updated...");
+		}
+	}
+
+});

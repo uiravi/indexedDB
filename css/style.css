@@ -106,3 +106,7 @@ body {
 .danger{
   color: #f00;
 }
+.cursor{
+  cursor: pointer;
+}
+span.customer{padding:8px 20px;}
