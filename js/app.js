@@ -40,7 +40,6 @@ function addCustomer(){
 	//Ask for ObjectStore
 	var store = transaction.objectStore('customers');
 
-	console.log(store);
 	//Define customer
 	var customer = {
 		name: name,
@@ -90,24 +89,27 @@ function showCustomers(e){
 
 //Delete A Customer
 function removeCustomers(id){
-	var transaction = db.transaction(['customers'], 'readwrite');
+	if(confirm("Are you sure..! want to delete this customer") == true){
 
-	//Ask for ObjectStore
-	var store = transaction.objectStore('customers');
+		var transaction = db.transaction(['customers'], 'readwrite');
 
-	var request = store.delete(id);
+		//Ask for ObjectStore
+		var store = transaction.objectStore('customers');
 
-	//Success
-	request.onsuccess = function(){
-		var customerName = $("#customer_"+id).find(".name").attr('data');
-		console.log("Customer "+id, customerName+" has been Deleted");
-		$("#customer_"+id).remove();
-	}
+		var request = store.delete(id);
 
-	//Error
-	request.onerror = function(e){
-		alert("Sorry, The customer was not removed");
-		console.log("Error ", e.target.error.name);
+		//Success
+		request.onsuccess = function(){
+			var customerName = $("#customer_"+id).find(".name").attr('data');
+			console.log("Customer "+id, customerName+" has been Deleted");
+			$("#customer_"+id).remove();
+		}
+
+		//Error
+		request.onerror = function(e){
+			alert("Sorry, The customer was not removed");
+			console.log("Error ", e.target.error.name);
+		}
 	}
 }
 
